@@ -1,7 +1,7 @@
 const {google} = require('googleapis');
 //const spawn = require('child_process').spawn;
 const sheets = google.sheets('v4');
-const {DATA_EMAIL, DATA_PASSWORD, URL} = require('./config.js')
+const {DATA_EMAIL, DATA_PASSWORD, URL, SPREADSHEETID, AUTH} = require('./config.js')
 const webdriver = require('selenium-webdriver');
 const {By} = require('selenium-webdriver')
 const chrome = require('selenium-webdriver/chrome');
@@ -25,16 +25,33 @@ const chrome = require('selenium-webdriver/chrome');
   await driver.get(URL)
 
   setTimeout(async () => { 
-    for(var i=0; i<3; i++){
+    var i;
+    for(i=0; i<3; i++){
       const Btn = await driver.findElement(By.className('tool-tip-next'));
       await Btn.click(); 
       if(i == 2){
         const uploadBtn = await driver.findElement(By.className('gw_gy gw_gA'));
-        await Btn.click();
+        await uploadBtn.click();
       }
     }
-  }, 5000); 
+    setTimeout(async () => {
+      if(i == 3){
+        const fileupload = await driver.findElement(By.xpath("//button[contains(text(), '파일 추가')]"))
+        await fileupload.click();
+        i = 0;
+      }
+      if(i == 0){
+        const file = driver.findElement(By.xpath("//input[@id='pingpong-scripts']"))
+        file.sendKeys('./scenario.csv');
+      }
+    }, 4000)
+    
+  }, 6000); 
 
-   setTimeout(async () => { await driver.quit(); process.exit(0); }, 20000); 
+
+  setTimeout(async () => { await driver.quit(); process.exit(0); }, 23000); 
   } 
   run();
+
+  /*        const fileupload = await driver.findElement(By.className('gw_gy'))
+        await fileupload.click();*/
